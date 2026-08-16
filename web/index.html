@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SyncDrop</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h1>SyncDrop</h1>
+
+        <p class="subtitle">
+            Peer-to-peer Bluetooth file sharing
+        </p>
+
+        <button id="connectBtn">
+            Connect Bluetooth Device
+        </button>
+
+        <div id="status" class="status">
+            Not connected
+        </div>
+
+        <div id="deviceInfo" class="hidden">
+            <p>
+                Device:
+                <span id="deviceName"></span>
+            </p>
+
+            <p>
+                Status:
+                <span id="connectionStatus"></span>
+            </p>
+        </div>
+
+        <div id="messageControls" class="hidden">
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Message to Android"
+            />
+
+            <button id="sendBtn">
+                Send Message
+            </button>
+
+        </div>
+
+        <div id="fileControls" class="hidden">
+
+            <h3>Send File</h3>
+
+            <input
+                type="file"
+                id="fileInput"
+            />
+
+            <button id="sendFileBtn">
+                Send File
+            </button>
+
+            <p id="fileStatus"></p>
+
+        </div>
+
+        <button id="testChunkBtn">
+            Send Test Chunk
+        </button>
+
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
