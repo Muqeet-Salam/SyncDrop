@@ -30,6 +30,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Archive APK') {
+            steps {
+                archiveArtifacts artifacts: 'android/app/build/outputs/apk/debug/app-debug.apk',
+                                fingerprint: true
+            }
+        }
     }
 
     post {
