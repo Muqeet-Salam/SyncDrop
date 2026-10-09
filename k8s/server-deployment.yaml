@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: syncdrop-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: syncdrop-server
+  template:
+    metadata:
+      labels:
+        app: syncdrop-server
+    spec:
+      containers:
+        - name: server
+          image: syncdrop-server:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8765
+          volumeMounts:
+            - name: received-files
+              mountPath: /app/received
+      volumes:
+        - name: received-files
+          persistentVolumeClaim:
+            claimName: syncdrop-received-pvc
