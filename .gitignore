@@ -1,0 +1,19 @@
+# Android
+.gradle/
+**/build/
+local.properties
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node/Web
+node_modules/

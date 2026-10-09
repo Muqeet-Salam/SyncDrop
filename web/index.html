@@ -3,80 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>SyncDrop</title>
-
+    <title>SyncDrop — Peer-to-Peer Bluetooth Transfer</title>
+    <meta name="description" content="Seamless peer-to-peer file sharing and instant messaging between Android and Web browsers over Bluetooth LE.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <!-- Ambient Background Glows -->
+    <div class="glow-backdrop">
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+    </div>
 
-    <main class="container">
+    <div class="app-wrapper">
+        <!-- Top Navigation / App Header -->
+        <header class="app-header">
+            <div class="brand-group">
+                <div class="brand-icon-wrapper">
+                    <i data-lucide="zap" class="brand-icon"></i>
+                    <span class="brand-pulse"></span>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title-row">
+                        <h1 class="brand-title">SyncDrop</h1>
+                        <span class="brand-badge">P2P BLE</span>
+                    </div>
+                    <p class="brand-subtitle">High-speed Bluetooth sharing for Android & Web</p>
+                </div>
+            </div>
 
-        <h1>SyncDrop</h1>
+            <div class="header-actions">
+                <div id="connectionBadge" class="connection-badge status-disconnected">
+                    <span class="status-dot"></span>
+                    <span id="badgeText">Disconnected</span>
+                </div>
+                <button id="themeToggleBtn" class="icon-btn" title="Toggle Theme" aria-label="Toggle theme">
+                    <i data-lucide="sun" class="light-icon"></i>
+                    <i data-lucide="moon" class="dark-icon"></i>
+                </button>
+            </div>
+        </header>
 
-        <p class="subtitle">
-            Peer-to-peer Bluetooth file sharing
-        </p>
+        <!-- Main Grid Layout -->
+        <main class="main-grid">
+            <!-- Left Column: Connection & Device Center -->
+            <section class="card glass-card device-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <i data-lucide="bluetooth" class="section-icon"></i>
+                        <h2 class="card-title">Device Connection</h2>
+                    </div>
+                    <span class="card-tag" id="gattStatusTag">GATT Server</span>
+                </div>
 
-        <button id="connectBtn">
-            Connect Bluetooth Device
-        </button>
+                <!-- Connect Hero Button -->
+                <div class="connect-action-area">
+                    <button id="connectBtn" class="btn btn-primary btn-hero">
+                        <span class="btn-glow"></span>
+                        <i data-lucide="bluetooth-searching" class="btn-icon"></i>
+                        <span class="btn-text">Connect Bluetooth Device</span>
+                        <i data-lucide="arrow-right" class="btn-arrow"></i>
+                    </button>
 
-        <div id="status" class="status">
-            Not connected
-        </div>
+                    <button id="disconnectBtn" class="btn btn-danger hidden">
+                        <i data-lucide="power" class="btn-icon"></i>
+                        <span>Disconnect Device</span>
+                    </button>
+                </div>
 
-        <div id="deviceInfo" class="hidden">
-            <p>
-                Device:
-                <span id="deviceName"></span>
-            </p>
+                <!-- Status Banner (backwards-compatible with id="status") -->
+                <div id="status" class="status-banner">
+                    <i data-lucide="info" class="status-banner-icon"></i>
+                    <span class="status-text-content">Ready to pair with your Android device running SyncDrop.</span>
+                </div>
 
-            <p>
-                Status:
-                <span id="connectionStatus"></span>
-            </p>
-        </div>
+                <!-- Device Info Card (backwards-compatible with id="deviceInfo") -->
+                <div id="deviceInfo" class="device-details-card hidden">
+                    <div class="device-detail-row">
+                        <div class="detail-label">
+                            <i data-lucide="smartphone" class="mini-icon"></i>
+                            <span>Remote Device</span>
+                        </div>
+                        <span id="deviceName" class="detail-value highlight">Unknown</span>
+                    </div>
 
-        <div id="messageControls" class="hidden">
+                    <div class="device-detail-row">
+                        <div class="detail-label">
+                            <i data-lucide="activity" class="mini-icon"></i>
+                            <span>Link Status</span>
+                        </div>
+                        <span id="connectionStatus" class="detail-value status-pill online">Connected</span>
+                    </div>
 
-            <input
-                type="text"
-                id="messageInput"
-                placeholder="Message to Android"
-            />
+                    <div class="device-detail-row">
+                        <div class="detail-label">
+                            <i data-lucide="shield-check" class="mini-icon"></i>
+                            <span>BLE Protocol</span>
+                        </div>
+                        <span class="detail-value mono">GATT Chunks (512B)</span>
+                    </div>
+                </div>
 
-            <button id="sendBtn">
-                Send Message
-            </button>
+                <!-- Quick Diagnostic & Actions -->
+                <div class="diagnostic-actions">
+                    <div class="section-label">Quick Actions</div>
+                    <div class="action-btn-group">
+                        <button id="testChunkBtn" class="btn btn-secondary btn-sm" title="Sends a 17-byte verification packet">
+                            <i data-lucide="send" class="btn-icon"></i>
+                            <span>Send Test Packet</span>
+                        </button>
+                        <button id="pingBtn" class="btn btn-secondary btn-sm" title="Read device greeting message">
+                            <i data-lucide="radio" class="btn-icon"></i>
+                            <span>Read Greeting</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
 
-        </div>
+            <!-- Right Column: Interactive Transfer & Message Center -->
+            <section class="card glass-card transfer-card">
+                <!-- Navigation Tabs -->
+                <div class="tab-header">
+                    <button class="tab-btn active" data-tab="filesTab">
+                        <i data-lucide="folder-up" class="tab-icon"></i>
+                        <span>Send Files</span>
+                    </button>
+                    <button class="tab-btn" data-tab="messagesTab">
+                        <i data-lucide="message-square" class="tab-icon"></i>
+                        <span>Quick Chat</span>
+                        <span id="msgCountBadge" class="tab-badge hidden">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="activityTab">
+                        <i data-lucide="history" class="tab-icon"></i>
+                        <span>Activity Log</span>
+                    </button>
+                </div>
 
-        <div id="fileControls" class="hidden">
+                <!-- Tab Content 1: File Transfer (backwards-compatible with id="fileControls") -->
+                <div id="filesTab" class="tab-pane active">
+                    <div id="fileControls" class="file-transfer-box">
+                        <!-- Dropzone -->
+                        <div id="dropZone" class="dropzone">
+                            <input type="file" id="fileInput" class="file-input-hidden" />
+                            <div class="dropzone-content">
+                                <div class="dropzone-icon-ring">
+                                    <i data-lucide="upload-cloud" class="dropzone-icon"></i>
+                                </div>
+                                <h3 class="dropzone-title">Drag & drop files here</h3>
+                                <p class="dropzone-subtitle">or click to browse from your computer</p>
+                                <div class="dropzone-badge">Any file format • Fast BLE streaming</div>
+                            </div>
+                        </div>
 
-            <h3>Send File</h3>
+                        <!-- Selected File Preview -->
+                        <div id="filePreviewCard" class="file-preview-card hidden">
+                            <div class="file-preview-icon-box" id="fileTypeIconBox">
+                                <i data-lucide="file" id="fileIcon"></i>
+                            </div>
+                            <div class="file-preview-info">
+                                <div class="file-preview-name" id="selectedFileName">filename.ext</div>
+                                <div class="file-preview-meta">
+                                    <span id="selectedFileSize">0 KB</span>
+                                    <span class="dot-separator">•</span>
+                                    <span id="selectedFileType" class="file-type-pill">application</span>
+                                </div>
+                            </div>
+                            <button id="clearFileBtn" class="icon-btn-danger" title="Remove file">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
 
-            <input
-                type="file"
-                id="fileInput"
-            />
+                        <!-- Transfer Dashboard (Appears while transferring) -->
+                        <div id="transferProgressBox" class="transfer-progress-box hidden">
+                            <div class="transfer-status-header">
+                                <div class="transfer-phase-label" id="transferPhaseLabel">Transferring File...</div>
+                                <div class="transfer-percent" id="transferPercent">0%</div>
+                            </div>
 
-            <button id="sendFileBtn">
-                Send File
-            </button>
+                            <div class="progress-bar-track">
+                                <div id="progressBarFill" class="progress-bar-fill" style="width: 0%">
+                                    <span class="progress-glow"></span>
+                                </div>
+                            </div>
 
-            <p id="fileStatus"></p>
+                            <div class="transfer-metrics-grid">
+                                <div class="metric-item">
+                                    <span class="metric-label">Transferred</span>
+                                    <span class="metric-value" id="metricBytes">0 KB / 0 KB</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Transfer Speed</span>
+                                    <span class="metric-value" id="metricSpeed">0 KB/s</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Chunks</span>
+                                    <span class="metric-value" id="metricChunks">0 / 0</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Estimated Time</span>
+                                    <span class="metric-value" id="metricEta">--:--</span>
+                                </div>
+                            </div>
+                        </div>
 
-        </div>
+                        <!-- Send File Actions -->
+                        <div class="file-action-buttons">
+                            <button id="sendFileBtn" class="btn btn-primary btn-full">
+                                <i data-lucide="send" class="btn-icon"></i>
+                                <span>Send File to Android</span>
+                            </button>
+                            <button id="cancelTransferBtn" class="btn btn-secondary btn-full hidden">
+                                <i data-lucide="circle-stop" class="btn-icon"></i>
+                                <span>Cancel Transfer</span>
+                            </button>
+                        </div>
 
-        <button id="testChunkBtn">
-            Send Test Chunk
-        </button>
+                        <!-- File Status Message (backwards-compatible with id="fileStatus") -->
+                        <p id="fileStatus" class="file-status-msg"></p>
+                    </div>
+                </div>
 
-    </main>
+                <!-- Tab Content 2: Quick Message (backwards-compatible with id="messageControls") -->
+                <div id="messagesTab" class="tab-pane hidden">
+                    <div id="messageControls" class="message-section">
+                        <div class="chat-feed" id="chatFeed">
+                            <div class="chat-empty-state" id="chatEmptyState">
+                                <i data-lucide="message-square-dashed" class="empty-icon"></i>
+                                <p>No messages exchanged yet.</p>
+                                <span>Send a message to your connected Android device.</span>
+                            </div>
+                        </div>
 
+                        <div class="chat-input-bar">
+                            <input
+                                type="text"
+                                id="messageInput"
+                                class="chat-input"
+                                placeholder="Type a message or paste text to send to Android..."
+                                autocomplete="off"
+                            />
+                            <button id="sendBtn" class="btn btn-primary chat-send-btn" title="Send message">
+                                <i data-lucide="send"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content 3: Activity & Transfer History Log -->
+                <div id="activityTab" class="tab-pane hidden">
+                    <div class="activity-section">
+                        <div class="activity-toolbar">
+                            <span class="activity-counter" id="activityCount">0 events logged</span>
+                            <button id="clearLogBtn" class="btn-text-only">
+                                <i data-lucide="trash-2" class="mini-icon"></i>
+                                <span>Clear Log</span>
+                            </button>
+                        </div>
+                        <div class="log-stream" id="logStream">
+                            <div class="log-item system">
+                                <span class="log-time" id="initTime">00:00:00</span>
+                                <span class="log-tag tag-sys">SYS</span>
+                                <span class="log-msg">SyncDrop Web client initialized.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Notification Toast Container -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <!-- Application Script -->
     <script src="app.js"></script>
-
 </body>
 </html>
